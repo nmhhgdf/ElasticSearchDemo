@@ -1,32 +1,32 @@
-package org.example.elasticsearchdemo.test;
-
-import org.apache.http.HttpHost;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
-
-import java.io.IOException;
-
-public class ESTest_Index_Delete {
-
-    public static void main(String[] args) throws IOException {
-
-        RestHighLevelClient esClient = new RestHighLevelClient(
-                RestClient.builder(new HttpHost("192.168.75.129", 9200, "http"))
-        );
-
-        DeleteIndexRequest request = new DeleteIndexRequest("user");
-        AcknowledgedResponse delete = esClient.indices().delete(request, RequestOptions.DEFAULT);
-
-        // 响应状态
-        System.out.println(delete.isAcknowledged());
-
-        esClient.close();
-
-    }
-
-}
+//package org.example.elasticsearchdemo.test;
+//
+//import org.apache.http.HttpHost;
+//import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+//import org.elasticsearch.action.support.master.AcknowledgedResponse;
+//import org.elasticsearch.client.RequestOptions;
+//import org.elasticsearch.client.RestClient;
+//import org.elasticsearch.client.RestHighLevelClient;
+//import org.elasticsearch.client.indices.GetIndexRequest;
+//import org.elasticsearch.client.indices.GetIndexResponse;
+//
+//import java.io.IOException;
+//
+//public class ESTest_Index_Delete {
+//
+//    public static void main(String[] args) throws IOException {
+//
+//        RestHighLevelClient esClient = new RestHighLevelClient(
+//                RestClient.builder(new HttpHost("192.168.75.129", 9200, "http"))
+//        );
+//
+//        DeleteIndexRequest request = new DeleteIndexRequest("user");
+//        AcknowledgedResponse delete = esClient.indices().delete(request, RequestOptions.DEFAULT);
+//
+//        // 响应状态
+//        System.out.println(delete.isAcknowledged());
+//
+//        esClient.close();
+//
+//    }
+//
+//}
