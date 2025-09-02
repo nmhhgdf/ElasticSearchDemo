@@ -2,13 +2,20 @@ package org.example.elasticsearchdemo.test8;
 
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.bulk.CreateOperation;
 import co.elastic.clients.elasticsearch.indices.*;
+import co.elastic.clients.elasticsearch.indices.ExistsRequest;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ESClient {
 
@@ -22,7 +29,8 @@ public class ESClient {
     public static void main(String[] args) throws Exception {
         try {
             initESConnection();
-            operationIndex();
+//            operationIndex();
+            operationIndexDocument();
         } finally {
             closeConnection();
         }
@@ -83,6 +91,52 @@ public class ESClient {
                 req -> req.index(INDEX_TEST)
         );
         System.out.println("索引删除：" + deleteIndexResponse.acknowledged());
+
+    }
+
+
+    private static void operationIndexDocument() throws Exception {
+
+//        CreateResponse createResponse = client.create(new CreateRequest.Builder<User>()
+//                .index(INDEX_TEST)
+//                .id("1001")
+//                .document(new User(
+//                        1001,
+//                        "zhangsan",
+//                        30))
+//                .build());
+//        System.out.println("文档创建：" + createResponse);
+
+        List<BulkOperation> opts = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            CreateOperation<User> optObj = new CreateOperation.Builder<User>()
+                    .index(INDEX_TEST)
+                    .id("200" + i)
+                    .document(new User(
+                            2000 + i,
+                            "zhangsan" + i,
+                            30 + i))
+                    .build();
+            opts.add(new BulkOperation.Builder()
+                    .create(optObj)
+                    .build());
+        }
+
+        BulkResponse bulkResponse = client.bulk(
+                new BulkRequest.Builder()
+                        .index(INDEX_TEST)
+                        .operations(opts)
+                        .build()
+        );
+        System.out.println("批量新增数据响应： " + bulkResponse);
+
+        DeleteResponse deleteResponse = client.delete(
+                new DeleteRequest.Builder()
+                        .index(INDEX_TEST)
+                        .id("1001")
+                        .build()
+        );
+        System.out.println("删除数据： " + deleteResponse);
 
     }
 
