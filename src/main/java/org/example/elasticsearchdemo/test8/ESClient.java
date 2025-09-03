@@ -2,6 +2,8 @@ package org.example.elasticsearchdemo.test8;
 
 import co.elastic.clients.elasticsearch.ElasticsearchAsyncClient;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.bulk.CreateOperation;
@@ -30,7 +32,10 @@ public class ESClient {
         try {
             initESConnection();
 //            operationIndex();
-            operationIndexDocument();
+//            operationIndexDocument();
+//            operationIndexDocumentLambda();
+//            queryDocument();
+            queryDocumentLambda();
         } finally {
             closeConnection();
         }
@@ -138,6 +143,59 @@ public class ESClient {
         );
         System.out.println("删除数据： " + deleteResponse);
 
+    }
+
+    private static void operationIndexDocumentLambda() throws Exception {
+
+        CreateResponse createResponse = client.create(
+                req -> req
+                        .index(INDEX_TEST)
+                        .id("1001")
+                        .document(new User(1001, "zhangsan", 30))
+                );
+        System.out.println("文档创建：" + createResponse);
+
+
+        DeleteResponse deleteResponse = client.delete(
+                req -> req.index(INDEX_TEST).id("1001")
+        );
+        System.out.println("删除数据： " + deleteResponse);
+
+    }
+
+    private static void queryDocument() throws Exception {
+        MatchQuery matchQuery = new MatchQuery.Builder()
+                .field("age").query(30)
+                .build();
+
+        Query query = new Query.Builder()
+                .match(matchQuery)
+                .build();
+
+        SearchResponse<Object> searchResponse = client.search(
+                new SearchRequest.Builder()
+                        .query(query)
+                        .build()
+                , Object.class
+        );
+        System.out.println(searchResponse);
+    }
+
+    private static void queryDocumentLambda() throws Exception {
+
+        SearchResponse<Object> searchResponse = client.search(
+                req -> {
+                    req.query(
+                            q -> q.match(
+                                    m -> m.field("name").query("zhangsan")
+                            )
+                    );
+                    return req;
+                },
+                Object.class
+        );
+
+        System.out.println(searchResponse);
     }
 
     public static void initESConnection() throws Exception {
