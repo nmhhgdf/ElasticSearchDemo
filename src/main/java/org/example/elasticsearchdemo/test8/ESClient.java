@@ -35,9 +35,10 @@ public class ESClient {
 //            operationIndexDocument();
 //            operationIndexDocumentLambda();
 //            queryDocument();
-            queryDocumentLambda();
+//            queryDocumentLambda();
+            asyncClientOperation();
         } finally {
-            closeConnection();
+//            closeConnection();
         }
     }
 
@@ -179,6 +180,26 @@ public class ESClient {
                 , Object.class
         );
         System.out.println(searchResponse);
+    }
+
+    private static void asyncClientOperation() throws Exception {
+
+        asyncClient.indices().create(
+                req -> req.index("newindex")
+        ).thenApply(
+                resp -> resp.acknowledged()
+        ).whenComplete(
+                (resp, error) -> {
+                    System.out.println("回调方法");
+                    if (resp) {
+                        System.out.println(resp);
+                    } else {
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+
     }
 
     private static void queryDocumentLambda() throws Exception {
